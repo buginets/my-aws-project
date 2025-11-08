@@ -93,4 +93,4 @@ docker pull ${RKE_TOOLS_IMG} && docker save ${RKE_TOOLS_IMG} -o images/rke-tools
 docker pull ${WORDPRESS_IMG} && for svc in cars flights hotels notification payment search; do docker save ${WORDPRESS_IMG} -o images/${svc}.tar.gz; done
 docker pull rancher/rancher:v2.11.7 && docker save rancher/rancher:v2.11.7 -o images/rancher.tar.gz
 
-echo "✅ Charts and Docker images ready in tarbowl folder."
+echo "✅ Charts and Docker images ready in tarbowl folder hello" 
