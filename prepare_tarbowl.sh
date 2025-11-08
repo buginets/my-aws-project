@@ -7,22 +7,22 @@ cd "$SCRIPT_DIR"
 # -------------------------------
 # Helm home & config
 # -------------------------------
-export HELM_HOME="$SCRIPT_DIR/.helm"
-export XDG_CONFIG_HOME="$HELM_HOME/config"
-export XDG_DATA_HOME="$HELM_HOME/data"
-export XDG_CACHE_HOME="$HELM_HOME/cache"
+HELM_HOME="$SCRIPT_DIR/.helm"
+export HELM_CONFIG_HOME="$HELM_HOME/config"
+export HELM_DATA_HOME="$HELM_HOME/data"
+export HELM_CACHE_HOME="$HELM_HOME/cache"
 
 # Create all nested directories recursively
-mkdir -p "$XDG_CONFIG_HOME/helm/registry" \
-         "$XDG_DATA_HOME" \
-         "$XDG_CACHE_HOME/repository"
+mkdir -p "$HELM_CONFIG_HOME/registry" \
+         "$HELM_DATA_HOME" \
+         "$HELM_CACHE_HOME/repository"
 
 # Ensure correct permissions
 chmod -R 700 "$HELM_HOME"
 
 # Create empty files to avoid Helm trying to write to non-existent files
-touch "$XDG_CONFIG_HOME/helm/registry/config.json"
-touch "$XDG_CACHE_HOME/repository/repositories.lock"
+touch "$HELM_CONFIG_HOME/registry/config.json"
+touch "$HELM_CACHE_HOME/repository/repositories.lock"
 
 echo "✅ Helm home and config set to project folder: $HELM_HOME"
 
@@ -31,11 +31,12 @@ echo "✅ Helm home and config set to project folder: $HELM_HOME"
 # 2️⃣ Charts & images folders
 # -------------------------------
 mkdir -p charts images
+chmod 755 charts images  # Ensure writable
 
 # -------------------------------
 # 3️⃣ Helm chart versions & images
 # -------------------------------
-PROMETHEUS_VER="27.44.1"
+PROMETHEUS_VER="27.44.0"
 GRAFANA_VER="12.1.8"
 JENKINS_VER="5.8.107"
 MYSQL_VER="14.0.3"
@@ -43,14 +44,14 @@ REDIS_VER="23.2.12"
 INGRESS_VER="4.14.0"
 WORDPRESS_VER="27.1.8"
 
-PROMETHEUS_IMG="quay.io/prometheus/prometheus:v2.53.0"
-GRAFANA_IMG="bitnamilegacy/grafana:latest"
+PROMETHEUS_IMG="prom/prometheus:latest"
+GRAFANA_IMG="grafana/grafana:latest"
 JENKINS_IMG="jenkins/jenkins:lts-jdk21"
-MYSQL_IMG="bitnamilegacy/mysql:latest"
-REDIS_IMG="bitnamilegacy/redis:latest"
+MYSQL_IMG="bitnami/mysql:latest"
+REDIS_IMG="bitnami/redis:latest"
 COREDNS_IMG="coredns/coredns:1.13.1"
 RKE_TOOLS_IMG="rancher/rke-tools:v0.1.114"
-WORDPRESS_IMG="bitnamilegacy/wordpress:latest"
+WORDPRESS_IMG="bitnami/wordpress:latest"
 
 # -------------------------------
 # 4️⃣ Add repos and update

@@ -41,7 +41,7 @@ chmod +x ./prepare_tarbowl.sh
 # -------------------------------
 # 3️⃣ Set project-local Helm & Ansible temp
 # -------------------------------
-HELM_HOME="$SCRIPT_DIR/.helm"  # Convenience var
+HELM_HOME="$SCRIPT_DIR/.helm"
 export HELM_CONFIG_HOME="$HELM_HOME/config"
 export HELM_DATA_HOME="$HELM_HOME/data"
 export HELM_CACHE_HOME="$HELM_HOME/cache"
@@ -50,9 +50,9 @@ mkdir -p "$HELM_CONFIG_HOME/registry" "$HELM_DATA_HOME" "$HELM_CACHE_HOME/reposi
 : > "$HELM_CACHE_HOME/repository/repositories.lock"
 chmod -R 700 "$HELM_HOME"
 
-export ANSIBLE_LOCAL_TMP="$SCRIPT_DIR/.ansible_tmp"
-mkdir -p "$ANSIBLE_LOCAL_TMP"
-chmod 700 "$ANSIBLE_LOCAL_TMP"
+export ANSIBLE_LOCAL_TEMP="$SCRIPT_DIR/.ansible_tmp"
+mkdir -p "$ANSIBLE_LOCAL_TEMP"
+chmod 700 "$ANSIBLE_LOCAL_TEMP"
 
 echo "✅ Helm and Ansible temp set to project folder"
 
