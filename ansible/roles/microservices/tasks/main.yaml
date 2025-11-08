@@ -1,0 +1,17 @@
+---
+# Deploy microservice applications
+
+- name: Create applications namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: apps
+    state: present
+
+- name: Deploy microservices Helm charts
+  shell: |
+    for chart in /charts/*.tar.gz; do
+      NAME=$(basename $chart .tar.gz)
+      helm install $NAME $chart --namespace apps --create-namespace || helm upgrade $NAME $chart --namespace apps
+  args:
+    executable: /bin/bash

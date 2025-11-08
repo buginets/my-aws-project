@@ -1,0 +1,18 @@
+---
+# Push Helm charts and Docker images to Harbor
+# Uses the harbor_admin_password from Ansible Vault
+
+- name: Login to Harbor registry
+  shell: |
+    docker login localhost -u admin -p "{{ harbor_admin_password }}"
+  register: docker_login
+  ignore_errors: yes
+
+- name: Load and push Docker images (public images for microservices)
+  shell: |
+    for img in /images/*.tar.gz; do
+      docker load -i $img
+      IMAGE_NAME=$(docker images --format "{{ '{{.Repository}}:{{.Tag}}' }}" | head -n1)
+      docker tag $IMAGE_NAME localhost/$IMAGE_NAME
+      docker push localhost/$IMAGE_NAME
+    done

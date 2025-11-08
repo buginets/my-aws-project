@@ -1,0 +1,8 @@
+hostname: localhost
+http:
+  port: 80
+harbor_admin_password: "{{ harbor_admin_password }}"
+database:
+  password: "{{ postgres_password }}"
+data_volume: /opt/harbor/data
+log_volume: /opt/harbor/log

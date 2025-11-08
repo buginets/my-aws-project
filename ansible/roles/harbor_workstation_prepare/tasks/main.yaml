@@ -1,0 +1,14 @@
+---
+# Prepare directories for Harbor installation
+
+- name: Create Harbor directory
+  file:
+    path: /opt/harbor
+    state: directory
+    owner: "{{ ansible_user }}"
+    mode: 0755
+
+- name: Copy Harbor config template
+  template:
+    src: harbor.yml.j2
+    dest: /opt/harbor/harbor.yml

@@ -1,0 +1,39 @@
+---
+# This role prepares all VMs with basic packages and OS settings
+
+- name: Update APT package cache
+  apt:
+    update_cache: yes
+
+- name: Install required packages
+  apt:
+    name:
+      - curl
+      - wget
+      - vim
+      - git
+      - unzip
+      - apt-transport-https
+      - ca-certificates
+      - software-properties-common
+    state: present
+
+- name: Disable swap for Kubernetes
+  command: swapoff -a
+  become: yes
+
+- name: Ensure swap is disabled permanently
+  replace:
+    path: /etc/fstab
+    regexp: '(^.*swap.*$)'
+    replace: '# \1'
+
+- name: Set sysctl for Kubernetes networking
+  sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: yes
+  loop:
+    - { key: 'net.bridge.bridge-nf-call-iptables', value: 1 }
+    - { key: 'net.ipv4.ip_forward', value: 1 }

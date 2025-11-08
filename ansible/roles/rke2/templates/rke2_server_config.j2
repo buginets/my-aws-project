@@ -1,0 +1,6 @@
+write-kubeconfig-mode: "0644"
+tls-san:
+  - "{{ ansible_host }}"
+token: "{{ rke2_node_token }}"
+node-taint:
+  - "CriticalAddonsOnly=true:NoExecute"

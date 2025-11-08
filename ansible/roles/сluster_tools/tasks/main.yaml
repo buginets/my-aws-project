@@ -1,0 +1,41 @@
+---
+# Deploy core monitoring and CI/CD tools via Helm
+
+- name: Create monitoring namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: monitoring
+    state: present
+
+- name: Install Prometheus
+  community.kubernetes.helm:
+    name: prometheus
+    chart_ref: /charts/prometheus.tar.gz
+    release_namespace: monitoring
+    create_namespace: yes
+
+- name: Install Grafana
+  community.kubernetes.helm:
+    name: grafana
+    chart_ref: /charts/grafana.tar.gz
+    release_namespace: monitoring
+
+- name: Create CI namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: ci
+    state: present
+
+- name: Install Jenkins
+  community.kubernetes.helm:
+    name: jenkins
+    chart_ref: /charts/jenkins.tar.gz
+    release_namespace: ci
+
+- name: Install SonarQube
+  community.kubernetes.helm:
+    name: sonarqube
+    chart_ref: /charts/sonarqube.tar.gz
+    release_namespace: ci

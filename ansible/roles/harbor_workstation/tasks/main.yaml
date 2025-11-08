@@ -1,0 +1,18 @@
+---
+# Install and run Harbor using docker-compose
+
+- name: Download Harbor installer
+  get_url:
+    url: https://github.com/goharbor/harbor/releases/download/v2.9.0/harbor-online-installer-v2.9.0.tgz
+    dest: /tmp/harbor.tgz
+
+- name: Extract Harbor
+  unarchive:
+    src: /tmp/harbor.tgz
+    dest: /opt/
+    remote_src: yes
+
+- name: Run Harbor installer
+  shell: /opt/harbor/install.sh --with-notary --with-trivy
+  args:
+    chdir: /opt/harbor

@@ -1,0 +1,6 @@
+# Dynamic secrets will be stored here after deployment
+rke2_node_token: "temporarytoken"
+harbor_admin_password: "changeme"
+jenkins_admin_password: "changeme"
+sonarqube_admin_password: "changeme"
+postgres_password: "changeme"
