@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# file: deploy.sh
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -39,28 +38,30 @@ touch "$HELM_CACHE_HOME/repository/repositories.lock"
 echo "✅ Helm home and config set to project folder: $HELM_HOME"
 
 # -------------------------------
-# Ensure Ansible temp directories are safe and writable
+# Ensure Ansible local temp is writable by become/root
 # -------------------------------
-ANSIBLE_LOCAL_TEMP="/tmp/ansible_local_temp_${USER}"
-ANSIBLE_REMOTE_TEMP="/tmp/ansible_remote_temp_${USER}"
-
-sudo rm -rf "$ANSIBLE_LOCAL_TEMP" "$ANSIBLE_REMOTE_TEMP"
-sudo mkdir -p "$ANSIBLE_LOCAL_TEMP" "$ANSIBLE_REMOTE_TEMP"
-sudo chown -R "$USER:$USER" "$ANSIBLE_LOCAL_TEMP" "$ANSIBLE_REMOTE_TEMP"
-chmod 700 "$ANSIBLE_LOCAL_TEMP" "$ANSIBLE_REMOTE_TEMP"
-
+ANSIBLE_LOCAL_TEMP="$SCRIPT_DIR/.ansible_tmp"
+rm -rf "$ANSIBLE_LOCAL_TEMP"
+mkdir -p "$ANSIBLE_LOCAL_TEMP"
+chmod 777 "$ANSIBLE_LOCAL_TEMP"   # allow root and user to write
 export ANSIBLE_LOCAL_TEMP
-export ANSIBLE_REMOTE_TEMP
 
-# -------------------------------
-# Ansible Galaxy role cache
-# -------------------------------
 ANSIBLE_GALAXY_CACHE="$SCRIPT_DIR/.ansible_galaxy_cache"
 mkdir -p "$ANSIBLE_GALAXY_CACHE"
 chmod 700 "$ANSIBLE_GALAXY_CACHE"
 export ANSIBLE_GALAXY_ROLE_CACHE="$ANSIBLE_GALAXY_CACHE"
+
 export ANSIBLE_ROLES_PATH="$SCRIPT_DIR/ansible/roles"
 echo "✅ Project-local Ansible directories configured."
+
+# -------------------------------
+# Load Docker images (offline)
+# -------------------------------
+echo "🐳 Loading Docker images from images/*.tar.gz..."
+for img in images/*.tar.gz; do
+    docker load -i "$img"
+done
+echo "✅ Docker images loaded."
 
 # -------------------------------
 # Ansible Vault password
@@ -73,25 +74,10 @@ printf "%s" "$VAULT_PASS" > "$VAULT_FILE"
 export ANSIBLE_VAULT_PASSWORD_FILE="$VAULT_FILE"
 
 # -------------------------------
-# Run bootstrap playbook first (installs Docker via role)
+# Run playbooks sequentially
 # -------------------------------
-FIRST_PLAYBOOK="ansible/playbooks/01_bootstrap_bastion.yaml"
-echo "=== Running playbook: $FIRST_PLAYBOOK ==="
-ansible-playbook -i inventory.yaml "$FIRST_PLAYBOOK"
-
-# -------------------------------
-# Load Docker images (offline) - Use sudo to ensure it works without relog for group
-# -------------------------------
-echo "🐳 Loading Docker images from images/*.tar.gz..."
-for img in images/*.tar.gz; do
-    sudo docker load -i "$img"
-done
-echo "✅ Docker images loaded."
-
-# -------------------------------
-# Run remaining playbooks sequentially
-# -------------------------------
-REMAINING_PLAYBOOKS=(
+PLAYBOOKS=(
+  "ansible/playbooks/01_bootstrap_bastion.yaml"
   "ansible/playbooks/02_base_on_vms.yaml"
   "ansible/playbooks/03_rke2_install.yaml"
   "ansible/playbooks/04_fetch_kubeconfig.yaml"
@@ -102,17 +88,15 @@ REMAINING_PLAYBOOKS=(
   "ansible/playbooks/99_collect_secrets.yaml"
 )
 
-for pb in "${REMAINING_PLAYBOOKS[@]}"; do
+for pb in "${PLAYBOOKS[@]}"; do
     echo "=== Running playbook: $pb ==="
     ansible-playbook -i inventory.yaml "$pb"
 done
 
 # -------------------------------
-# Cleanup
+# Clean up Vault password
 # -------------------------------
 rm -f "$VAULT_FILE"
 unset ANSIBLE_VAULT_PASSWORD_FILE
 
-sudo rm -rf "$ANSIBLE_LOCAL_TEMP" "$ANSIBLE_REMOTE_TEMP"
 echo "✅ Deployment finished!"
-echo "Note: For non-sudo Docker access, log out and log back in to apply group changes."

@@ -1,0 +1,6 @@
+---
+- name: Prepare Harbor on workstation
+  hosts: workstation
+  become: yes
+  roles:
+    - harbor_workstation_prepare

@@ -1,0 +1,8 @@
+---
+- name: Upload images and charts to Harbor
+  hosts: workstation
+  become: yes
+  roles:
+    - harbor_upload
+  vars:
+    harbor_registry: "localhost:5000"

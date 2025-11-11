@@ -1,0 +1,3 @@
+# ~/my-aws-project/requirements.txt
+flask==3.0.3
+mysql-connector-python==9.1.0

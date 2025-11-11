@@ -1,0 +1,6 @@
+image:
+  repository: my-flask-app:latest
+  tag: latest
+service:
+  type: ClusterIP
+  port: 5000

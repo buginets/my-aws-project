@@ -1,0 +1,8 @@
+---
+- name: Install RKE2 on Kubernetes nodes
+  hosts: k8s_nodes
+  become: yes
+  roles:
+    - rke2
+  vars:
+    rke2_version: "v1.28.12+rke2r1"

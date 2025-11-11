@@ -1,0 +1,15 @@
+---
+- name: Deploy 3-tier app and tools
+  hosts: k8s_nodes
+  become: yes
+  roles:
+    - microservices
+  vars:
+    harbor_registry: "localhost:5000"
+    frontend_image: "{{ harbor_registry }}/frontend"
+    backend_image: "{{ harbor_registry }}/backend"
+    mysql_image: "{{ harbor_registry }}/mysql"
+    prometheus_image: "{{ harbor_registry }}/prometheus"
+    grafana_image: "{{ harbor_registry }}/grafana"
+    jenkins_image: "{{ harbor_registry }}/jenkins"
+    sonarqube_image: "{{ harbor_registry }}/sonarqube"

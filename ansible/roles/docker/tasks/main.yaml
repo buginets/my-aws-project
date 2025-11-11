@@ -1,33 +1,45 @@
 ---
-# Install Docker CE
+# Install Docker CE (Ubuntu 22.04+ safe)
+
+- name: Remove conflicting Ubuntu Docker packages
+  apt:
+    name:
+      - docker
+      - docker.io
+      - docker-engine
+      - containerd
+      - runc
+    state: absent
 
 - name: Add Docker GPG key
-  apt_key:
+  ansible.builtin.apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
 
-- name: Add Docker repository
-  apt_repository:
-    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+- name: Add Docker repository (for Ubuntu Jammy)
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable"
     state: present
 
 - name: Install Docker packages
-  apt:
+  ansible.builtin.apt:
     name:
       - docker-ce
       - docker-ce-cli
       - containerd.io
+      - docker-compose-plugin
+      - docker-buildx-plugin
     state: present
     update_cache: yes
 
 - name: Add user to docker group
-  user:
+  ansible.builtin.user:
     name: "{{ ansible_user }}"
     groups: docker
     append: yes
 
 - name: Enable and start Docker
-  systemd:
+  ansible.builtin.systemd:
     name: docker
     enabled: yes
     state: started

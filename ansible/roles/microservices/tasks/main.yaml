@@ -1,17 +1,124 @@
 ---
-# Deploy microservice applications
+- name: Deploy frontend (Nginx)
+  kubernetes.core.helm:
+    name: frontend
+    chart_ref: "{{ playbook_dir }}/../../charts/frontend.tar.gz"
+    release_namespace: default
+    values:
+      image:
+        repository: "{{ frontend_image }}"
+        tag: latest
+      service:
+        type: ClusterIP
+        port: 80
+      ingress:
+        enabled: true
+        hosts:
+          - host: todo-app.local
+            paths:
+              - path: /
+                pathType: Prefix
 
-- name: Create applications namespace
-  kubernetes.core.k8s:
-    api_version: v1
-    kind: Namespace
-    name: apps
-    state: present
+- name: Deploy backend (Flask)
+  kubernetes.core.helm:
+    name: backend
+    chart_ref: "{{ playbook_dir }}/../../charts/backend.tar.gz"
+    release_namespace: default
+    values:
+      image:
+        repository: "{{ backend_image }}"
+        tag: latest
+      service:
+        type: ClusterIP
+        port: 5000
+      env:
+        - name: MYSQL_HOST
+          value: mysql
+        - name: MYSQL_PASSWORD
+          value: "{{ mysql_root_password }}"
 
-- name: Deploy microservices Helm charts
-  shell: |
-    for chart in /charts/*.tar.gz; do
-      NAME=$(basename $chart .tar.gz)
-      helm install $NAME $chart --namespace apps --create-namespace || helm upgrade $NAME $chart --namespace apps
-  args:
-    executable: /bin/bash
+- name: Deploy MySQL
+  kubernetes.core.helm:
+    name: mysql
+    chart_ref: "{{ playbook_dir }}/../../charts/mysql.tar.gz"
+    release_namespace: default
+    values:
+      image:
+        repository: "{{ mysql_image }}"
+        tag: latest
+      auth:
+        rootPassword: "{{ mysql_root_password }}"
+        database: todo
+
+- name: Deploy Prometheus
+  kubernetes.core.helm:
+    name: prometheus
+    chart_ref: "{{ playbook_dir }}/../../charts/prometheus.tar.gz"
+    release_namespace: default
+    values:
+      image:
+        repository: "{{ prometheus_image }}"
+        tag: latest
+      service:
+        type: ClusterIP
+        port: 9090
+
+- name: Deploy Grafana
+  kubernetes.core.helm:
+    name: grafana
+    chart_ref: "{{ playbook_dir }}/../../charts/grafana.tar.gz"
+    release_namespace: default
+    values:
+      image:
+        repository: "{{ grafana_image }}"
+        tag: latest
+      service:
+        type: ClusterIP
+        port: 3000
+      ingress:
+        enabled: true
+        hosts:
+          - host: grafana.local
+            paths:
+              - path: /
+                pathType: Prefix
+
+- name: Deploy Jenkins
+  kubernetes.core.helm:
+    name: jenkins
+    chart_ref: "{{ playbook_dir }}/../../charts/jenkins.tar.gz"
+    release_namespace: default
+    values:
+      image:
+        repository: "{{ jenkins_image }}"
+        tag: lts-jdk21
+      service:
+        type: ClusterIP
+        port: 8080
+      ingress:
+        enabled: true
+        hosts:
+          - host: jenkins.local
+            paths:
+              - path: /
+                pathType: Prefix
+
+- name: Deploy SonarQube
+  kubernetes.core.helm:
+    name: sonarqube
+    chart_ref: "{{ playbook_dir }}/../../charts/sonarqube.tar.gz"
+    release_namespace: default
+    values:
+      image:
+        repository: "{{ sonarqube_image }}"
+        tag: community
+      service:
+        type: ClusterIP
+        port: 9000
+      ingress:
+        enabled: true
+        hosts:
+          - host: sonarqube.local
+            paths:
+              - path: /
+                pathType: Prefix

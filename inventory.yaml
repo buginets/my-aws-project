@@ -1,0 +1,83 @@
+all:
+  children:
+    bastion:
+      hosts:
+        localhost:
+          ansible_connection: local
+          ansible_user: ubuntu
+          ansible_become: true
+
+    controlplane:
+      hosts:
+        controlplane1:
+          ansible_host: 34.230.10.5
+          ansible_user: ubuntu
+
+    workers:
+      hosts:
+        worker2:
+          ansible_host: 18.206.168.150
+          ansible_user: ubuntu
+
+    k8s_nodes:
+      children:
+        controlplane:
+        workers:
+
+    workstation:
+      hosts:
+        localhost:
+          ansible_connection: local
+          ansible_user: ubuntu
+          ansible_become: true
+
+  vars:
+    ansible_become: true
+    ansible_ssh_private_key_file: ~/.ssh/id_rsa
+    rke2_version: "v1.28.12+rke2r1"
+    harbor_registry: "localhost:5000"
+    frontend_image: "{{ harbor_registry }}/frontend"
+    backend_image: "{{ harbor_registry }}/backend"
+    mysql_image: "{{ harbor_registry }}/mysql"
+    prometheus_image: "{{ harbor_registry }}/prometheus"
+    grafana_image: "{{ harbor_registry }}/grafana"
+    jenkins_image: "{{ harbor_registry }}/jenkins"
+    sonarqube_image: "{{ harbor_registry }}/sonarqube"
+
+# all:
+#   children:
+#     cluster:
+#       hosts:
+#         controlplane1:
+#           ansible_host: 34.230.10.5
+#           ansible_user: ubuntu
+#         worker2:
+#           ansible_host: 18.206.168.150
+#           ansible_user: ubuntu
+
+#   vars:
+#     ansible_become: true
+#     ansible_ssh_private_key_file: ~/.ssh/id_rsa
+
+# workstation:
+#   hosts:
+#     localhost:
+#       ansible_connection: local
+
+
+#[workstation]
+#workstation1 ansible_host=23.22.218.164 ansible_user=ubuntu
+
+#[controlplane]
+#controlplane1 ansible_host=34.230.10.5 ansible_user=ubuntu
+
+#[workers]
+#worker2 ansible_host=18.206.168.150 ansible_user=ubuntu
+#worker2 ansible_host=10.0.0.13 ansible_user=ubuntu
+#worker3 ansible_host=10.0.0.14 ansible_user=ubuntu
+
+#[all:vars]
+#ansible_become=true
+#ansible_ssh_private_key_file=~/.ssh/id_rsa
+
+#rke2_server_url: "https://{{ hostvars['controlplane'].ansible_host }}:9345"

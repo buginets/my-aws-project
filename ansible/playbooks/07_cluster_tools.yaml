@@ -1,0 +1,8 @@
+---
+- name: Deploy Kubernetes cluster tools
+  hosts: controlplane
+  become: yes
+  roles:
+    - cluster_tools
+  vars:
+    harbor_registry: "localhost:5000"

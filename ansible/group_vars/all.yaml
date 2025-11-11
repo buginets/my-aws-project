@@ -1,5 +1,6 @@
-# Dynamic secrets will be stored here after deployment
 rke2_node_token: "temporarytoken"
+rke2_server_url: "https://{{ hostvars['controlplane1'].ansible_host }}:9345"
+
 harbor_admin_password: "changeme"
 jenkins_admin_password: "changeme"
 sonarqube_admin_password: "changeme"

@@ -1,0 +1,19 @@
+---
+- name: Bootstrap bastion host
+  hosts: bastion
+  become: yes
+  tasks:
+    - name: Install required packages
+      apt:
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+      vars:
+        packages:
+          - curl
+          - git
+          - python3-pip
+          # No need for docker.io here anymore—the role handles it
+
+  roles:
+    - docker  # Include your new role here (runs after tasks by default)

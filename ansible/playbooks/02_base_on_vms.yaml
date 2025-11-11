@@ -1,0 +1,6 @@
+---
+- name: Install base packages on VMs
+  hosts: k8s_nodes
+  become: yes
+  roles:
+    - common
