@@ -59,7 +59,7 @@ echo "✅ Project-local Ansible directories configured."
 # -------------------------------
 echo "🐳 Loading Docker images from images/*.tar.gz..."
 for img in images/*.tar.gz; do
-    docker load -i "$img"
+    sudo docker load -i "$img"
 done
 echo "✅ Docker images loaded."
 

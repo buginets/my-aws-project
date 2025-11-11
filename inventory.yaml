@@ -35,7 +35,7 @@ all:
     ansible_become: true
     ansible_ssh_private_key_file: ~/.ssh/id_rsa
     rke2_version: "v1.28.12+rke2r1"
-    harbor_registry: "localhost:5000"
+    harbor_registry: "172.31.31.222"
     frontend_image: "{{ harbor_registry }}/frontend"
     backend_image: "{{ harbor_registry }}/backend"
     mysql_image: "{{ harbor_registry }}/mysql"

@@ -13,6 +13,6 @@
     remote_src: yes
 
 - name: Run Harbor installer
-  shell: /opt/harbor/install.sh --with-notary --with-trivy
+  shell: /opt/harbor/install.sh #--with-notary --with-trivy
   args:
     chdir: /opt/harbor

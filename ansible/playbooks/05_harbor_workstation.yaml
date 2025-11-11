@@ -2,5 +2,8 @@
 - name: Prepare Harbor on workstation
   hosts: workstation
   become: yes
+  vars_files:
+    - vars/secrets.yml 
   roles:
     - harbor_workstation_prepare
+    - harbor_workstation 

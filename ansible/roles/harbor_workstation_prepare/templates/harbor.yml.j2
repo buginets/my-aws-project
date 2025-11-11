@@ -1,8 +1,9 @@
-hostname: localhost
+hostname: 172.31.31.222
 http:
   port: 80
-harbor_admin_password: "{{ harbor_admin_password }}"
+harbor_admin_password: "changeme"
 database:
-  password: "{{ postgres_password }}"
+  password: "changeme"
 data_volume: /opt/harbor/data
 log_volume: /opt/harbor/log
+
